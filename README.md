@@ -5,7 +5,11 @@
 Build steps from root folder:
 
 1- cd tp0
+
 2- mkdir build && cd build
+
 3- cmake ..
+
 4- make
+
 5- ./tp0
