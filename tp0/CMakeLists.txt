@@ -6,9 +6,11 @@ set(TEST_PATH "${ROOT_PATH}/test/")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
 
+# Tests
+enable_testing()
+add_subdirectory(${TEST_PATH})
+
 set(SOURCE_FILES src/main.c pgmFactory.h)
 add_executable(tp0 ${SOURCE_FILES})
+target_link_libraries(${PROJECT_NAME})
 
-# Tests
-#enable_testing()
-#add_subdirectory(${TEST_PATH})
