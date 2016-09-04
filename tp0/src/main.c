@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "pgmFactory.h"
+#include "../pgmFactory.h"
 
 int main(int argc, char **argv) {
     int rows = 3;
