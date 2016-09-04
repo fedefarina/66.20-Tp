@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+#Run this as sudo to install cMocka lib dependency
+
+
 root_dir=`pwd`
 install_dir="$root_dir/temp_install"
 
