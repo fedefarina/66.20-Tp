@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     float cIm = 0.01;
 
     float rectangleWidth = 4;
-    float rectangleHeigth = 4;
+    float rectangleHeight = 4;
 
     char *output = NULL;
     /************************ input parameters **********************************/
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     char *centerValue = NULL;
     char *cValue = NULL;
     char *rectangleWidthValue = NULL;
-    char *rectangleHeigthValue = NULL;
+    char *rectangleHeightValue = NULL;
     char *outputValue = NULL;
     opterr = 0;
 
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
                 rectangleWidthValue = optarg;
                 break;
             case 'H':
-                rectangleHeigthValue = optarg;
+                rectangleHeightValue = optarg;
                 break;
             case 'o':
                 outputValue = optarg;
@@ -95,9 +95,9 @@ int main(int argc, char **argv) {
         char rWidth[offsetResolution];
         strncpy(rWidth, resolutionValue, offsetResolution);
         resolutionWidth = atoi(rWidth);
-        char rHeigth[length - offsetResolution - 1];
-        strncpy(rHeigth, resolutionValue + offsetResolution + 1, length);
-        resolutionHeight = atoi(rHeigth);
+        char rHeight[length - offsetResolution - 1];
+        strncpy(rHeight, resolutionValue + offsetResolution + 1, length);
+        resolutionHeight = atoi(rHeight);
     }
 
     /* rectangle width value */
@@ -113,11 +113,11 @@ int main(int argc, char **argv) {
     }
 
     /* rectangle heigth value */
-    if (rectangleHeigthValue != NULL) {
-        int isValid = checkNumber(rectangleHeigthValue);
+    if (rectangleHeightValue != NULL) {
+        int isValid = checkNumber(rectangleHeightValue);
         if (isValid == 0) {
-            float h = atof(rectangleHeigthValue);
-            rectangleHeigth = h;
+            float h = atof(rectangleHeightValue);
+            rectangleHeight = h;
         } else {
             printError("fatal: invalid heigth rectangle specification.");
             return 1;
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
     printf("resolution width= %d \n", resolutionWidth);
     printf("resolution heigth= %d \n", resolutionHeight);
     printf("rectangle width= %f \n", rectangleWidth);
-    printf("rectangle heigth= %f \n", rectangleHeigth);
+    printf("rectangle heigth= %f \n", rectangleHeight);
     printf("center real= %f \n", centerRe);
     printf("center im= %f \n", centerIm);
     printf("c real= %f \n", cRe);
@@ -211,7 +211,7 @@ int checkImaginaryNumber(char *argumentValue) {
        return -1;
     }
     int point = 0;
-    int cantSignos = 0;
+    int amountOfSigns = 0;
     int offset = 0;
     for (int i = length - 1; i >= 0; i--) {
         if (isdigit(argumentValue[i])) {
@@ -221,11 +221,11 @@ int checkImaginaryNumber(char *argumentValue) {
             if (!(isdigit(argumentValue[i+1]) && isdigit(argumentValue[i-1]))) {
                 return -1;
             }
-        } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && cantSignos == 0) {
-            cantSignos++;
+        } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 0) {
+            amountOfSigns++;
             point = 0;
             offset = i;
-        } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && cantSignos == 1) {
+        } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 1) {
             if (i != 0) {
                 return -1;
             }
