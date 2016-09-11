@@ -246,18 +246,18 @@ int checkImaginaryNumber(char *argumentValue) {
     int point = 0;
     int amountOfSigns = 0;
     int offset = 0;
-    for (size_t i = length - 1; i >= 0; i--) {
+    for (int i = length - 1; i >= 0; i--) {
         if (isdigit(argumentValue[i])) {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
-            point = (int) i;
+            point = i;
             if (!(isdigit(argumentValue[i + 1]) && isdigit(argumentValue[i - 1]))) {
                 return -1;
             }
         } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 0) {
             amountOfSigns++;
             point = 0;
-            offset = (int) i;
+            offset = i;
         } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 1) {
             if (i != 0) {
                 return -1;
