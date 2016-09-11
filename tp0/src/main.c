@@ -11,37 +11,26 @@ int checkImaginaryNumber(char *argumentValue);
 int checkNumber(char *argumentValue);
 
 /**
- * Devuelvo -1 si no se pudo escribir el archivo correctamente
+ * Devuelvo -1 si no se pudo escribir el archivo correctamente, 0 en otro caso.
  */
-int createPGM(int cols, int rows, int maxVal, char *name, int matrix[rows][cols]) {
+void createPGM(int cols, int rows, int maxVal, FILE *fp, int matrix[rows][cols]) {
+    fprintf(fp, "%s\n", "P2");
+    fprintf(fp, "%d ", cols);
+    fprintf(fp, "%d\n", rows);
+    fprintf(fp, "%d\n", maxVal);
 
-    FILE *fp;
-    fp = fopen(name, "w");
-
-    if (fp != NULL) {
-        fputs("P2", fp);
-        fprintf(fp, "\n# %s \n", name);
-        fprintf(fp, "%d ", cols);
-        fprintf(fp, "%d\n", rows);
-        fprintf(fp, "%d\n", maxVal);
-
-        for (int j = 0; j < cols; j++) {
-            for (int i = 0; i < rows; i++) {
-                fprintf(fp, "%d", matrix[i][j]);
-                //Avoid add an space after last column
-                if (i != rows - 1) {
-                    fputs(" ", fp);
-                }
+    for (int j = 0; j < cols; j++) {
+        for (int i = 0; i < rows; i++) {
+            fprintf(fp, "%d", matrix[i][j]);
+            //Avoid add an space after last column
+            if (i != rows - 1) {
+                fputs(" ", fp);
             }
-            fputs("\n", fp);
         }
-
-        fclose(fp);
-    } else {
-        return -1;
+        fputs("\n", fp);
     }
 
-    return 0;
+    fclose(fp);
 }
 
 int main(int argc, char **argv) {
@@ -160,16 +149,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* ouptut value */
-    if (output != NULL) {
-        FILE *fp = fopen(output, "w");
-        if (fp != NULL) {
-            fclose(fp);
-        } else {
-            printError("fatal: cannot open output file.");
-            exit(EXIT_FAILURE);
-        }
-    }
 
 
     /* c value */
@@ -204,6 +183,21 @@ int main(int argc, char **argv) {
         centerIm = atof(centerAuxIm);
     }
 
+
+    FILE *fp;
+
+    /* ouptut value */
+    if (output != NULL) {
+        fp = fopen(output, "w");
+        if (fp == NULL) {
+            printError("fatal: cannot open output file.");
+            exit(EXIT_FAILURE);
+        }
+    } else {//stdout
+        fp = stdout;
+    }
+
+
     /* temporal para ver los valores que quedan */
     printf("resolution width= %d \n", resolutionWidth);
     printf("resolution heigth= %d \n", resolutionHeight);
@@ -230,7 +224,10 @@ int main(int argc, char **argv) {
         }
     }
 
-    createPGM(5, 3, 255, "prueba.pgm", matrix);
+
+    createPGM(5, 3, 255, fp, matrix);
+
+    fclose(fp);
 
     return EXIT_SUCCESS;
 }
