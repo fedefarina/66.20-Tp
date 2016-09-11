@@ -3,11 +3,46 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <memory.h>
-#include "../pgmFactory.h"
 
 void printError(char *message);
+
 int checkImaginaryNumber(char *argumentValue);
+
 int checkNumber(char *argumentValue);
+
+/**
+ * Devuelvo -1 si no se pudo escribir el archivo correctamente
+ */
+int createPGM(int cols, int rows, int maxVal, char *name, int matrix[rows][cols]) {
+
+    FILE *fp;
+    fp = fopen(name, "w");
+
+    if (fp != NULL) {
+        fputs("P2", fp);
+        fprintf(fp, "\n# %s \n", name);
+        fprintf(fp, "%d ", cols);
+        fprintf(fp, "%d\n", rows);
+        fprintf(fp, "%d\n", maxVal);
+
+        for (int j = 0; j < cols; j++) {
+            for (int i = 0; i < rows; i++) {
+                fprintf(fp, "%d", matrix[i][j]);
+                //Avoid add an space after last column
+                if (i != rows - 1) {
+                    fputs(" ", fp);
+                }
+            }
+            fputs("\n", fp);
+        }
+
+        fclose(fp);
+    } else {
+        return -1;
+    }
+
+    return 0;
+}
 
 int main(int argc, char **argv) {
 
@@ -15,14 +50,14 @@ int main(int argc, char **argv) {
     int resolutionWidth = 640;
     int resolutionHeight = 480;
 
-    float centerRe = 0;
-    float centerIm = 0;
+    double centerRe = 0;
+    double centerIm = 0;
 
-    float cRe = 0.285;
-    float cIm = 0.01;
+    double cRe = 0.285;
+    double cIm = 0.01;
 
-    float rectangleWidth = 4;
-    float rectangleHeight = 4;
+    double rectangleWidth = 4;
+    double rectangleHeight = 4;
 
     char *output = NULL;
     /************************ input parameters **********************************/
@@ -37,7 +72,7 @@ int main(int argc, char **argv) {
     char *outputValue = NULL;
     opterr = 0;
 
-    while ((parameter = getopt (argc, argv, "r:c:C:w:H:o:")) != -1)
+    while ((parameter = getopt(argc, argv, "r:c:C:w:H:o:")) != -1)
         switch (parameter) {
             case 'r':
                 resolutionValue = optarg;
@@ -62,33 +97,34 @@ int main(int argc, char **argv) {
                 output = outputValue;
                 break;
             case '?':
-                if (optopt == 'r' || optopt == 'c' || optopt == 'C' || optopt == 'w' || optopt == 'H' || optopt == 'o')
-                    fprintf (stderr, "Option -%c requires an argument.\n", optopt);
-                else if (isprint (optopt))
-                    fprintf (stderr, "Unknown argument `-%c'.\n", optopt);
-                else
-                    fprintf (stderr,
-                             "Unknown option character `\\x%x'.\n",
-                             optopt);
-                return 1;
+                if (optopt == 'r' || optopt == 'c' || optopt == 'C' || optopt == 'w' || optopt == 'H' ||
+                    optopt == 'o') {
+                    fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+                } else if (isprint (optopt)) {
+                    fprintf(stderr, "Unknown argument `-%c'.\n", optopt);
+                } else {
+                    fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+
+                }
+                exit(EXIT_FAILURE);
             default:
-                abort ();
+                exit(EXIT_FAILURE);
         }
 
     /* resolution values */
     if (resolutionValue != NULL) {
         size_t length = strlen(resolutionValue);
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             if (isdigit(resolutionValue[i])) {
                 continue;
             } else if (resolutionValue[i] == 'x' && offsetResolution == 0) {
                 offsetResolution = i;
             } else {
                 printError("fatal: invalid resolution specification.");
-                return 1;
+                exit(EXIT_FAILURE);
             }
         }
-        if (offsetResolution == 0 || offsetResolution == length -1) {
+        if (offsetResolution == 0 || offsetResolution == length - 1) {
             printError("fatal: invalid resolution specification.");
             return 1;
         }
@@ -104,11 +140,11 @@ int main(int argc, char **argv) {
     if (rectangleWidthValue != NULL) {
         int isValid = checkNumber(rectangleWidthValue);
         if (isValid == 0) {
-            float w = atof(rectangleWidthValue);
+            double w = atof(rectangleWidthValue);
             rectangleWidth = w;
         } else {
             printError("fatal: invalid width rectangle specification.");
-            return 1;
+            exit(EXIT_FAILURE);
         }
     }
 
@@ -116,33 +152,32 @@ int main(int argc, char **argv) {
     if (rectangleHeightValue != NULL) {
         int isValid = checkNumber(rectangleHeightValue);
         if (isValid == 0) {
-            float h = atof(rectangleHeightValue);
+            double h = atof(rectangleHeightValue);
             rectangleHeight = h;
         } else {
             printError("fatal: invalid heigth rectangle specification.");
-            return 1;
+            exit(EXIT_FAILURE);
         }
-
     }
 
     /* ouptut value */
     if (output != NULL) {
-        FILE *fp;
-        fp = fopen(output, "w");
+        FILE *fp = fopen(output, "w");
         if (fp != NULL) {
             fclose(fp);
         } else {
             printError("fatal: cannot open output file.");
-            return 1;
+            exit(EXIT_FAILURE);
         }
     }
+
 
     /* c value */
     if (cValue != NULL) {
         int offset = checkImaginaryNumber(cValue);
         if (offset == -1) {
             printError("fatal: invalid C value argument.");
-            return 1;
+            exit(EXIT_FAILURE);
         }
         char cAuxReal[offset];
         strncpy(cAuxReal, cValue, offset);
@@ -158,7 +193,7 @@ int main(int argc, char **argv) {
         int offset = checkImaginaryNumber(centerValue);
         if (offset == -1) {
             printError("fatal: invalid c value argument.");
-            return 1;
+            exit(EXIT_FAILURE);
         }
         char centerAuxReal[offset];
         strncpy(centerAuxReal, centerValue, offset);
@@ -167,7 +202,6 @@ int main(int argc, char **argv) {
         char centerAuxIm[length - offset - 1];
         strncpy(centerAuxIm, centerValue + offset, length);
         centerIm = atof(centerAuxIm);
-        
     }
 
     /* temporal para ver los valores que quedan */
@@ -182,14 +216,14 @@ int main(int argc, char **argv) {
     printf("output= %s \n", output);
 
 
+
+    //fixme sacar esto cuando esté el cálculo de la matriz
     int rows = 3;
     int cols = 5;
-
     int matrix[rows][cols];
 
 
     int count = 0;
-
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             matrix[i][j] = ++count;
@@ -198,8 +232,9 @@ int main(int argc, char **argv) {
 
     createPGM(5, 3, 255, "prueba.pgm", matrix);
 
-     return 0;
+    return EXIT_SUCCESS;
 }
+
 
 void printError(char *message) { fprintf(stderr, "%s\n", message); }
 
@@ -208,23 +243,23 @@ void printError(char *message) { fprintf(stderr, "%s\n", message); }
 int checkImaginaryNumber(char *argumentValue) {
     size_t length = strlen(argumentValue) - 1;
     if (argumentValue[length] != 'i') {
-       return -1;
+        return -1;
     }
     int point = 0;
     int amountOfSigns = 0;
     int offset = 0;
-    for (int i = length - 1; i >= 0; i--) {
+    for (size_t i = length - 1; i >= 0; i--) {
         if (isdigit(argumentValue[i])) {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
-            point = i;
-            if (!(isdigit(argumentValue[i+1]) && isdigit(argumentValue[i-1]))) {
+            point = (int) i;
+            if (!(isdigit(argumentValue[i + 1]) && isdigit(argumentValue[i - 1]))) {
                 return -1;
             }
         } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 0) {
             amountOfSigns++;
             point = 0;
-            offset = i;
+            offset = (int) i;
         } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 1) {
             if (i != 0) {
                 return -1;
@@ -239,12 +274,12 @@ int checkImaginaryNumber(char *argumentValue) {
 /* funcion que devuelve -1 si el parametro tiene un error y 0 si es un argumento correcto */
 int checkNumber(char *argumentValue) {
     int point = 0;
-    for (int i = 0; i < strlen(argumentValue); i++) {
-        if(isdigit(argumentValue[i])) {
+    for (unsigned int i = 0; i < strlen(argumentValue); i++) {
+        if (isdigit(argumentValue[i])) {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
             point = i;
-            if (!(isdigit(argumentValue[i+1]) && isdigit(argumentValue[i-1]))) {
+            if (!(isdigit(argumentValue[i + 1]) && isdigit(argumentValue[i - 1]))) {
                 return -1;
             }
         } else {
