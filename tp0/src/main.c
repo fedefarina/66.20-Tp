@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <memory.h>
+#include <math.h>
 
 void printError(char *message);
 
@@ -32,6 +33,63 @@ void createPGM(int cols, int rows, int maxVal, FILE *fp, int matrix[rows][cols])
 
     fclose(fp);
 }
+
+float module(float x, float y) {
+    return sqrt(x * x + y * y);
+}
+
+float calculateX(float x, float y, float c) {
+    return x * x - y * y + c;
+}
+
+float calculateY(float x, float y, float c) {
+    return 2 * x * y + c;
+}
+
+int** doCalculo(float xCenter, float yCenter, int height, int width, int resWidth, int resHeight, float cX, float cY, int iterations) {
+
+    float xArray[resWidth];
+    float yArray[resHeight];
+
+    float coeficientWidth = width / resWidth;
+    float coeficientHeight = height / resHeight;
+
+    float x = xCenter - width / 2;
+    float y = yCenter - height / 2;
+
+    int i = 0;
+    while(x < xCenter + width / 2) {
+        xArray[i] = x + coeficientWidth / 2;
+        x += coeficientWidth;
+    }
+    i = 0;
+    while(y < yCenter + height / 2) {
+        yArray[i] = y + coeficientHeight / 2;
+        y += coeficientHeight;
+    }
+
+    int output[resWidth][resHeight];
+
+    for (i = 0; i< resWidth; i++) {
+        for (int j = 0; j< resHeight; j++) {
+            float zReal = xArray[i];
+            float zIm = yArray[j];
+            int k = 0;
+            for (k; j < iterations; k++) {
+                if (module(zReal, zIm) > 2) {
+                    break;
+                }
+                float aux = calculateX(zReal, zIm, cX);
+                zIm = calculateY(zReal, zIm, cY);
+                zReal = aux;
+                zReal = aux;
+            }
+            output[i][j] = k;
+        }
+    }
+    return output;
+}
+
 
 int main(int argc, char **argv) {
 
@@ -215,18 +273,11 @@ int main(int argc, char **argv) {
     //fixme sacar esto cuando esté el cálculo de la matriz
     int rows = 3;
     int cols = 5;
-    int matrix[rows][cols];
+    int **matrix;
 
+    matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe, cIm, 256);
 
-    int count = 0;
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            matrix[i][j] = ++count;
-        }
-    }
-
-
-    createPGM(5, 3, 255, fp, matrix);
+    createPGM(resolutionWidth, resolutionHeight, 255, fp, matrix);
 
     fclose(fp);
 
