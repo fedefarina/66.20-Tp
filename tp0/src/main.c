@@ -51,22 +51,26 @@ int** doCalculo(float xCenter, float yCenter, int height, int width, int resWidt
     float xArray[resWidth];
     float yArray[resHeight];
 
-    float coeficientWidth = width / resWidth;
-    float coeficientHeight = height / resHeight;
+    float coeficientWidth = (float)width / (float)resWidth;
+    float coeficientHeight = (float)height / (float)resHeight;
 
     float x = xCenter - width / 2;
     float y = yCenter - height / 2;
 
     int i = 0;
+    printf("0\n");
     while(x < xCenter + width / 2) {
         xArray[i] = x + coeficientWidth / 2;
         x += coeficientWidth;
+        printf("coeficient> \f\n", coeficientWidth);
     }
+    printf("a\n");
     i = 0;
     while(y < yCenter + height / 2) {
         yArray[i] = y + coeficientHeight / 2;
         y += coeficientHeight;
     }
+    printf("b\n");
 
     int output[resWidth][resHeight];
 
@@ -255,7 +259,7 @@ int main(int argc, char **argv) {
         fp = stdout;
     }
 
-
+printf("1\n");
     /* temporal para ver los valores que quedan */
 /*    printf("resolution width= %d \n", resolutionWidth);
     printf("resolution heigth= %d \n", resolutionHeight);
@@ -276,7 +280,7 @@ int main(int argc, char **argv) {
     int **matrix;
 
     matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe, cIm, 256);
-
+printf("2\n");
     createPGM(resolutionWidth, resolutionHeight, 255, fp, matrix);
 
     fclose(fp);
