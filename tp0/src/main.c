@@ -163,8 +163,6 @@ int *doCalculo(double xCenter, double yCenter, double height, double width, int 
         }
     }
 
-    free(xArray);
-    free(yArray);
     return output;
 }
 
@@ -189,7 +187,7 @@ int main(int argc, char **argv) {
     int parameter;
     int offsetResolution = 0;
 
-    char *resolutionValue = NULL;
+    unsigned char *resolutionValue = NULL;
     char *centerValue = NULL;
     char *cValue = NULL;
     unsigned char *rectangleWidthValue = NULL;
@@ -200,7 +198,7 @@ int main(int argc, char **argv) {
     while ((parameter = getopt(argc, argv, "r:c:C:w:H:o:")) != -1)
         switch (parameter) {
             case 'r':
-                resolutionValue = optarg;
+                resolutionValue = (unsigned char *) optarg;
                 break;
             case 'c':
                 centerValue = optarg;
@@ -238,7 +236,7 @@ int main(int argc, char **argv) {
 
     /* resolution values */
     if (resolutionValue != NULL) {
-        size_t length = strlen(resolutionValue);
+        size_t length = strlen((const char *) resolutionValue);
         int i = 0;
         for (; i < length; i++) {
             if (resolutionValue[i] >= '0' && resolutionValue[i] <= '9') {
@@ -255,10 +253,10 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
         char rWidth[offsetResolution];
-        strncpy(rWidth, resolutionValue, (size_t) offsetResolution);
+        strncpy(rWidth, (const char *) resolutionValue, (size_t) offsetResolution);
         resolutionWidth = atoi(rWidth);
         char rHeight[length - offsetResolution - 1];
-        strncpy(rHeight, resolutionValue + offsetResolution + 1, length);
+        strncpy(rHeight, (const char *) (resolutionValue + offsetResolution + 1), length);
         resolutionHeight = atoi(rHeight);
         if (resolutionWidth == 0 || resolutionHeight == 0) {
             printError("fatal: invalid resolution specification.");
