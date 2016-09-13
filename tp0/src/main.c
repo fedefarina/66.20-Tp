@@ -79,7 +79,7 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
     int *output = (int *) malloc(((int) resWidth) * ((int) resHeight) * sizeof(int));
 
     if (!output) {
-        perror("fatal: Malloc failed");
+        printError("fatal: Malloc failed");
         exit(EXIT_FAILURE);
     }
 
