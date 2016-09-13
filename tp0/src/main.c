@@ -81,7 +81,7 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
 
     if (!output) {
         perror("malloc failed");
-        exit(ENOMEM);
+        exit(EXIT_FAILURE);
     }
 
 
