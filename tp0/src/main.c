@@ -51,11 +51,11 @@ int *matrix_row(int *output, int row, int width) {
     return output + row * width;
 }
 
-int *doCalculo(float xCenter, float yCenter, float height, float width, float resWidth, float resHeight, float cX,
+int *doCalculo(float xCenter, float yCenter, float height, float width, int resWidth, int resHeight, float cX,
                float cY, int iterations) {
 
-    float xArray[(int) resWidth];
-    float yArray[(int) resHeight];
+    float xArray[resWidth];
+    float yArray[resHeight];
 
     float coeficientWidth = width / resWidth;
     float coeficientHeight = height / resHeight;
@@ -76,7 +76,7 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
         i++;
     }
 
-    int *output = (int *) malloc(((int) resWidth) * ((int) resHeight) * sizeof(int));
+    int *output = (int *) malloc((resWidth) * (resHeight) * sizeof(int));
 
     if (!output) {
         printError("fatal: Malloc failed");
@@ -87,8 +87,8 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
     int r = 0;
     int c = 0;
     for (r = 0; r < resHeight; ++r) {
-        int *row = matrix_row(output, r, ((int) resWidth));
-        for (c = 0; c < ((int) resWidth); ++c) {
+        int *row = matrix_row(output, r, resWidth);
+        for (c = 0; c < resWidth; ++c) {
             row[c] = 0;
         }
     }
@@ -109,7 +109,7 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
                 zIm = calculateY(zReal, zIm, cY);
                 zReal = aux;
             }
-            int *row = matrix_row(output, j, ((int) resWidth));
+            int *row = matrix_row(output, j, resWidth);
             row[i] = k;
         }
     }
