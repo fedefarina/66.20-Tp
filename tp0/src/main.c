@@ -276,11 +276,6 @@ int main(int argc, char **argv) {
     printf("output= %s \n", output);
 
 
-
-
-    //fixme sacar esto cuando esté el cálculo de la matriz
-    int rows = 3;
-    int cols = 5;
     int **matrix;
 
     matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe, cIm, 256);
