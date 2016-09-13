@@ -112,7 +112,7 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
                 zReal = aux;
             }
             int *row = matrix_row(output, j, ((int) resWidth));
-            row[j] = k;
+            row[i] = k;
         }
     }
     return output;
