@@ -9,23 +9,23 @@ void printError(char *message);
 
 /* funcion que devuelve -1 si el parametro tiene un error y el offset donde se divide el numero complejo entre real
  *                  e imaginario en caso de estar bien              */
-unsigned int checkImaginaryNumber(unsigned char *argumentValue) {
+int checkImaginaryNumber(unsigned char *argumentValue) {
     size_t length = strlen((const char *) argumentValue) - 1;
     if (argumentValue[length] != 'i') {
-        return 1;
+        return -1;
     }
 
     int point = 0;
     int amountOfSigns = 0;
     unsigned int offset = 0;
-    int i = (unsigned int) (length - 1);
+    int i = (int) (length - 1);
     for (; i >= 0; i--) {
         if (isdigit(argumentValue[i])) {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
             point = i;
             if (!(isdigit(argumentValue[i + 1]) && isdigit(argumentValue[i - 1]))) {
-                return 1;
+                return -1;
             }
         } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 0) {
             amountOfSigns++;
@@ -33,17 +33,17 @@ unsigned int checkImaginaryNumber(unsigned char *argumentValue) {
             offset = (unsigned int) i;
         } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 1) {
             if (i != 0) {
-                return 1;
+                return -1;
             }
         } else {
-            return 1;
+            return -1;
         }
     }
     return offset;
 }
 
 
-/* funcion que devuelve 1 si el parametro tiene un error y 0 si es un argumento correcto */
+/* funcion que devuelve 0 si el parametro tiene un error y 1 si es un argumento correcto */
 unsigned int checkNumber(unsigned char *argumentValue) {
     int point = 0;
     size_t length = strlen((const char *) argumentValue);
@@ -54,13 +54,13 @@ unsigned int checkNumber(unsigned char *argumentValue) {
         } else if (argumentValue[i] == '.' && point == 0) {
             point = i;
             if (!(isdigit(argumentValue[i + 1]) && isdigit(argumentValue[i - 1]))) {
-                return 1;
+                return 0;
             }
         } else {
-            return 1;
+            return 0;
         }
     }
-    return 0;
+    return 1;
 }
 
 void createPGM(int cols, int rows, int maxVal, FILE *fp, int *matrix) {
@@ -267,7 +267,7 @@ int main(int argc, char **argv) {
     /* rectangle width value */
     if (rectangleWidthValue != NULL) {
         int isValid = checkNumber(rectangleWidthValue);
-        if (isValid == 0) {
+        if (isValid == 1) {
             double w = atof((const char *) rectangleWidthValue);
             rectangleWidth = w;
         } else {
@@ -279,7 +279,7 @@ int main(int argc, char **argv) {
     /* rectangle heigth value */
     if (rectangleHeightValue != NULL) {
         int isValid = checkNumber(rectangleHeightValue);
-        if (isValid == 0) {
+        if (isValid == 1) {
             double h = atof((const char *) rectangleHeightValue);
             rectangleHeight = h;
         } else {
@@ -292,13 +292,13 @@ int main(int argc, char **argv) {
 
     /* c value */
     if (cValue != NULL) {
-        size_t offset = checkImaginaryNumber((unsigned char *) cValue);
-        if (offset == 1) {
+        int offset = checkImaginaryNumber((unsigned char *) cValue);
+        if (offset == -1) {
             printError("fatal: invalid C value argument.");
             exit(EXIT_FAILURE);
         }
         char cAuxReal[offset];
-        strncpy(cAuxReal, cValue, offset);
+        strncpy(cAuxReal, cValue, (size_t) offset);
         cRe = atof(cAuxReal);
         size_t length = strlen(cValue);
         char cAuxIm[length - offset - 1];
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
     /* center value */
     if (centerValue != NULL) {
         int offset = checkImaginaryNumber((unsigned char *) centerValue);
-        if (offset == 1) {
+        if (offset == -1) {
             printError("fatal: invalid center specification.");
             exit(EXIT_FAILURE);
         }
