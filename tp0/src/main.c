@@ -24,7 +24,7 @@ void createPGM(int cols, int rows, int maxVal, FILE *fp, int *matrix) {
     for (; j < cols; j++) {
         int i = 0;
         for (; i < rows; i++) {
-            fprintf(fp, "%d", matrix[i * cols + j]);
+            fprintf(fp, "%d", matrix[j * rows + i]);
             //Avoid add an space after last column
             if (i != rows - 1) {
                 fputs(" ", fp);
