@@ -78,7 +78,7 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, int resW
 
     int *output = (int *) malloc((resWidth) * (resHeight) * sizeof(int));
 
-    if (!output) {
+    if (output == NULL) {
         printError("fatal: Malloc failed");
         exit(EXIT_FAILURE);
     }
@@ -292,16 +292,16 @@ int main(int argc, char **argv) {
 
     /* temporal para ver los valores que quedan */
 
-   /* printf("resolution width= %d \n", resolutionWidth);
-    printf("resolution heigth= %d \n", resolutionHeight);
-    printf("rectangle width= %f \n", rectangleWidth);
-    printf("rectangle heigth= %f \n", rectangleHeight);
-    printf("center real= %f \n", centerRe);
-    printf("center im= %f \n", centerIm);
-    printf("c real= %f \n", cRe);
-    printf("c im= %f \n", cIm);
-    printf("output= %s \n", output);
-*/
+    /* printf("resolution width= %d \n", resolutionWidth);
+     printf("resolution heigth= %d \n", resolutionHeight);
+     printf("rectangle width= %f \n", rectangleWidth);
+     printf("rectangle heigth= %f \n", rectangleHeight);
+     printf("center real= %f \n", centerRe);
+     printf("center im= %f \n", centerIm);
+     printf("c real= %f \n", cRe);
+     printf("c im= %f \n", cIm);
+     printf("output= %s \n", output);
+ */
 
     int *matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe,
                             cIm,
