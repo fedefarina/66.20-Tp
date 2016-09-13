@@ -46,38 +46,40 @@ float calculateY(float x, float y, float c) {
     return 2 * x * y + c;
 }
 
-int** doCalculo(float xCenter, float yCenter, int height, int width, int resWidth, int resHeight, float cX, float cY, int iterations) {
+int** doCalculo(float xCenter, float yCenter, float height, float width, float resWidth, float resHeight, float cX, float cY, int iterations) {
 
-    float xArray[resWidth];
-    float yArray[resHeight];
+    float xArray[(int)resWidth];
+    float yArray[(int)resHeight];
 
-    float coeficientWidth = (float)width / (float)resWidth;
-    float coeficientHeight = (float)height / (float)resHeight;
+    float coeficientWidth = width / resWidth;
+    float coeficientHeight = height / resHeight;
 
     float x = xCenter - width / 2;
     float y = yCenter - height / 2;
 
     int i = 0;
-    printf("0\n");
     while(x < xCenter + width / 2) {
         xArray[i] = x + coeficientWidth / 2;
         x += coeficientWidth;
-        printf("coeficient> \f\n", coeficientWidth);
+        i++;
     }
-    printf("a\n");
     i = 0;
     while(y < yCenter + height / 2) {
         yArray[i] = y + coeficientHeight / 2;
         y += coeficientHeight;
+        i++;
     }
-    printf("b\n");
 
-    int output[resWidth][resHeight];
+    int **output = malloc(resWidth * sizeof(int*)); //[(int)resWidth][(int)resHeight];
+    for (i = 0; i < resWidth; i++) {
+        output[i] = malloc(resHeight * sizeof(int));
+    }
 
     for (i = 0; i< resWidth; i++) {
         for (int j = 0; j< resHeight; j++) {
             float zReal = xArray[i];
             float zIm = yArray[j];
+
             int k = 0;
             for (k; j < iterations; k++) {
                 if (module(zReal, zIm) > 2) {
@@ -86,11 +88,11 @@ int** doCalculo(float xCenter, float yCenter, int height, int width, int resWidt
                 float aux = calculateX(zReal, zIm, cX);
                 zIm = calculateY(zReal, zIm, cY);
                 zReal = aux;
-                zReal = aux;
             }
             output[i][j] = k;
         }
     }
+    printf("salio\n");
     return output;
 }
 
@@ -259,9 +261,8 @@ int main(int argc, char **argv) {
         fp = stdout;
     }
 
-printf("1\n");
     /* temporal para ver los valores que quedan */
-/*    printf("resolution width= %d \n", resolutionWidth);
+   printf("resolution width= %d \n", resolutionWidth);
     printf("resolution heigth= %d \n", resolutionHeight);
     printf("rectangle width= %f \n", rectangleWidth);
     printf("rectangle heigth= %f \n", rectangleHeight);
@@ -270,7 +271,7 @@ printf("1\n");
     printf("c real= %f \n", cRe);
     printf("c im= %f \n", cIm);
     printf("output= %s \n", output);
-    */
+
 
 
 
@@ -280,10 +281,12 @@ printf("1\n");
     int **matrix;
 
     matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe, cIm, 256);
-printf("2\n");
+
     createPGM(resolutionWidth, resolutionHeight, 255, fp, matrix);
 
-    fclose(fp);
+   // fclose(fp);
+
+    free(matrix);
 
     return EXIT_SUCCESS;
 }
