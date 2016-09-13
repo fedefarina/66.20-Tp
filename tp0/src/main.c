@@ -163,8 +163,6 @@ int *doCalculo(double xCenter, double yCenter, double height, double width, int 
         }
     }
 
-    free(xArray);
-    free(yArray);
     return output;
 }
 
