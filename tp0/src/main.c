@@ -192,7 +192,7 @@ int main(int argc, char **argv) {
         size_t length = strlen(resolutionValue);
         int i = 0;
         for (; i < length; i++) {
-            if (isdigit(resolutionValue[i])) {
+            if (resolutionValue[i] >= '0' && resolutionValue[i] <= '9') {
                 continue;
             } else if (resolutionValue[i] == 'x' && offsetResolution == 0) {
                 offsetResolution = i;
@@ -331,11 +331,11 @@ int checkImaginaryNumber(char *argumentValue) {
     int offset = 0;
     int i = length - 1;
     for (; i >= 0; i--) {
-        if (isdigit(argumentValue[i])) {
+        if (argumentValue[i] >= '0' && argumentValue[i] <= '9') {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
             point = i;
-            if (!(isdigit(argumentValue[i + 1]) && isdigit(argumentValue[i - 1]))) {
+            if (!(argumentValue[i + 1] >= '0' && argumentValue[i + 1] <= '9') && (argumentValue[i - 1] >= '0' && argumentValue[i - 1] <= '9')) {
                 return -1;
             }
         } else if ((argumentValue[i] == '+' || argumentValue[i] == '-') && amountOfSigns == 0) {
@@ -359,11 +359,11 @@ int checkNumber(char *argumentValue) {
     size_t length = strlen(argumentValue);
     unsigned int i = 0;
     for (; i < length; i++) {
-        if (isdigit(argumentValue[i])) {
+        if (argumentValue[i] >= '0' && argumentValue[i] <= '9') {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
             point = i;
-            if (!(isdigit(argumentValue[i + 1]) && isdigit(argumentValue[i - 1]))) {
+            if (!(argumentValue[i + 1] >= '0' && argumentValue[i + 1] <= '9') && (argumentValue[i - 1] >= '0' && argumentValue[i - 1] <= '9')) {
                 return -1;
             }
         } else {
