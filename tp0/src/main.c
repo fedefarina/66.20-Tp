@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <memory.h>
 #include <math.h>
+#include <asm/errno.h>
 
 void printError(char *message);
 
@@ -14,7 +15,7 @@ int checkNumber(char *argumentValue);
 /**
  * Devuelvo -1 si no se pudo escribir el archivo correctamente, 0 en otro caso.
  */
-void createPGM(int cols, int rows, int maxVal, FILE *fp, int matrix[rows][cols]) {
+void createPGM(int cols, int rows, int maxVal, FILE *fp, int *matrix) {
     fprintf(fp, "%s\n", "P2");
     fprintf(fp, "%d\n", cols);
     fprintf(fp, "%d\n", rows);
@@ -23,7 +24,7 @@ void createPGM(int cols, int rows, int maxVal, FILE *fp, int matrix[rows][cols])
     for (; j < cols; j++) {
         int i = 0;
         for (; i < rows; i++) {
-            fprintf(fp, "%d", matrix[i][j]);
+            fprintf(fp, "%d", matrix[i * cols + j]);
             //Avoid add an space after last column
             if (i != rows - 1) {
                 fputs(" ", fp);
@@ -47,10 +48,15 @@ float calculateY(float x, float y, float c) {
     return 2 * x * y + c;
 }
 
-int** doCalculo(float xCenter, float yCenter, float height, float width, float resWidth, float resHeight, float cX, float cY, int iterations) {
+int *matrix_row(int *output, int row, int width) {
+    return output + row * width;
+}
 
-    float xArray[(int)resWidth];
-    float yArray[(int)resHeight];
+int *doCalculo(float xCenter, float yCenter, float height, float width, float resWidth, float resHeight, float cX,
+               float cY, int iterations) {
+
+    float xArray[(int) resWidth];
+    float yArray[(int) resHeight];
 
     float coeficientWidth = width / resWidth;
     float coeficientHeight = height / resHeight;
@@ -59,26 +65,39 @@ int** doCalculo(float xCenter, float yCenter, float height, float width, float r
     float y = yCenter - height / 2;
 
     int i = 0;
-    while(x < xCenter + width / 2) {
+    while (x < xCenter + width / 2) {
         xArray[i] = x + coeficientWidth / 2;
         x += coeficientWidth;
         i++;
     }
     i = 0;
-    while(y < yCenter + height / 2) {
+    while (y < yCenter + height / 2) {
         yArray[i] = y + coeficientHeight / 2;
         y += coeficientHeight;
         i++;
     }
 
-    int **output = malloc(resWidth * sizeof(int*)); //[(int)resWidth][(int)resHeight];
-    for (i = 0; i < resWidth; i++) {
-        output[i] = malloc(resHeight * sizeof(int));
+    int *output = (int *) malloc(((int) resWidth) * ((int) resHeight) * sizeof(int));
+
+    if (!output) {
+        perror("malloc failed");
+        exit(ENOMEM);
     }
 
-    for (i = 0; i< resWidth; i++) {
+
+    //Initialize with zeros
+    int r = 0;
+    int c = 0;
+    for (r = 0; r < resHeight; ++r) {
+        int *row = matrix_row(output, r, ((int) resWidth));
+        for (c = 0; c < ((int) resWidth); ++c) {
+            row[c] = 0;
+        }
+    }
+
+    for (i = 0; i < resWidth; i++) {
         int j = 0;
-        for (; j< resHeight; j++) {
+        for (; j < resHeight; j++) {
 
             float zReal = xArray[i];
             float zIm = yArray[j];
@@ -92,10 +111,10 @@ int** doCalculo(float xCenter, float yCenter, float height, float width, float r
                 zIm = calculateY(zReal, zIm, cY);
                 zReal = aux;
             }
-            output[i][j] = k;
+            int *row = matrix_row(output, j, ((int) resWidth));
+            row[j] = k;
         }
     }
-    printf("salio\n");
     return output;
 }
 
@@ -266,7 +285,7 @@ int main(int argc, char **argv) {
     }
 
     /* temporal para ver los valores que quedan */
-   printf("resolution width= %d \n", resolutionWidth);
+    printf("resolution width= %d \n", resolutionWidth);
     printf("resolution heigth= %d \n", resolutionHeight);
     printf("rectangle width= %f \n", rectangleWidth);
     printf("rectangle heigth= %f \n", rectangleHeight);
@@ -277,13 +296,13 @@ int main(int argc, char **argv) {
     printf("output= %s \n", output);
 
 
-    int **matrix;
-
-    matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe, cIm, 256);
+    int *matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe,
+                            cIm,
+                            256);
 
     createPGM(resolutionWidth, resolutionHeight, 255, fp, matrix);
 
-   // fclose(fp);
+    // fclose(fp);
 
     free(matrix);
 
