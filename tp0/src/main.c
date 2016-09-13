@@ -103,7 +103,7 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
             float zIm = yArray[i];
 
             int k = 0;
-            for (; j < iterations; k++) {
+            for (; k < iterations; k++) {
                 if (module(zReal, zIm) > 2) {
                     break;
                 }
