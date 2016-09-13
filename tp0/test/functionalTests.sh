@@ -31,7 +31,7 @@ fi
 
 #3. Imagen imposible
 OUTPUT="$(../build/tp0 -c 0+0i -r 0x1 -o - 2>&1)"
-TEST3_OUTPUT=$'fatal: invalid c value argument.'
+TEST3_OUTPUT=$'fatal: invalid resolution specification.'
 
 if [ "$OUTPUT" == "$TEST3_OUTPUT" ]
 then

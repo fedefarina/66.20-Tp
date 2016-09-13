@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
         }
         if (offsetResolution == 0 || offsetResolution == length - 1) {
             printError("fatal: invalid resolution specification.");
-            return 1;
+            exit(EXIT_FAILURE);
         }
         char rWidth[offsetResolution];
         strncpy(rWidth, resolutionValue, offsetResolution);
@@ -210,6 +210,10 @@ int main(int argc, char **argv) {
         char rHeight[length - offsetResolution - 1];
         strncpy(rHeight, resolutionValue + offsetResolution + 1, length);
         resolutionHeight = atoi(rHeight);
+        if (resolutionWidth == 0 || resolutionHeight == 0) {
+            printError("fatal: invalid resolution specification.");
+            exit(EXIT_FAILURE);
+        }
     }
 
     /* rectangle width value */
