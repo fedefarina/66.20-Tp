@@ -99,8 +99,8 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
         int j = 0;
         for (; j < resHeight; j++) {
 
-            float zReal = xArray[i];
-            float zIm = yArray[j];
+            float zReal = xArray[j];
+            float zIm = yArray[i];
 
             int k = 0;
             for (; j < iterations; k++) {
