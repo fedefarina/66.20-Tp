@@ -290,6 +290,7 @@ int main(int argc, char **argv) {
 
 
     /* temporal para ver los valores que quedan */
+
    /* printf("resolution width= %d \n", resolutionWidth);
     printf("resolution heigth= %d \n", resolutionHeight);
     printf("rectangle width= %f \n", rectangleWidth);
