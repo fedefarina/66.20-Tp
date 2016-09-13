@@ -8,6 +8,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 
 set(SOURCE_FILES src/main.c)
 add_executable(tp0 ${SOURCE_FILES})
+set_property(TARGET tp0 PROPERTY C_STANDARD 99)
+
+
 target_link_libraries(${PROJECT_NAME})
 target_link_libraries(tp0 m)
 
