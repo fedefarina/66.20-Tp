@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <memory.h>
 #include <math.h>
-#include <asm/errno.h>
 
 void printError(char *message);
 
@@ -80,10 +79,9 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
     int *output = (int *) malloc(((int) resWidth) * ((int) resHeight) * sizeof(int));
 
     if (!output) {
-        perror("malloc failed");
-        exit(ENOMEM);
+        perror("fatal: Malloc failed");
+        exit(EXIT_FAILURE);
     }
-
 
     //Initialize with zeros
     int r = 0;
@@ -288,8 +286,10 @@ int main(int argc, char **argv) {
         fp = stdout;
     }
 
+
     /* temporal para ver los valores que quedan */
-    printf("resolution width= %d \n", resolutionWidth);
+
+   /* printf("resolution width= %d \n", resolutionWidth);
     printf("resolution heigth= %d \n", resolutionHeight);
     printf("rectangle width= %f \n", rectangleWidth);
     printf("rectangle heigth= %f \n", rectangleHeight);
@@ -298,7 +298,7 @@ int main(int argc, char **argv) {
     printf("c real= %f \n", cRe);
     printf("c im= %f \n", cIm);
     printf("output= %s \n", output);
-
+*/
 
     int *matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe,
                             cIm,

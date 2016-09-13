@@ -19,7 +19,7 @@ fi
 #2. Repetimos el experimento, pero nos centramos ahora en un punto que seguro no pertenece al conjunto
 
 OUTPUT="$(../build/tp0 -c 10+0i -r 1x1 -o -)"
-TEST2_OUTPUT=$'P2\n1 1\n255\n255\n0'
+TEST2_OUTPUT=$'P2\n1 1\n255\n0'
 
 if [ "$OUTPUT" == "$TEST2_OUTPUT" ]
 then
@@ -56,7 +56,7 @@ else
 fi
 
 #5. Coordenadas complejas imposibles
-OUTPUT="$(../build/tp0 -c 1+3i -o - 2>&1)"
+OUTPUT="$(../build/tp0 -c 1+3 -o - 2>&1)"
 TEST5_OUTPUT=$'fatal: invalid center specification.'
 
 if [ "$OUTPUT" == "$TEST5_OUTPUT" ]
