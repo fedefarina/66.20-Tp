@@ -77,7 +77,8 @@ int** doCalculo(float xCenter, float yCenter, float height, float width, float r
     }
 
     for (i = 0; i< resWidth; i++) {
-        for (int j = 0; j< resHeight; j++) {
+        int j = 0;
+        for (; j< resHeight; j++) {
 
             float zReal = xArray[i];
             float zIm = yArray[j];
