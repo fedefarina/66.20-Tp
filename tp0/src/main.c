@@ -17,7 +17,7 @@ int checkNumber(char *argumentValue);
  */
 void createPGM(int cols, int rows, int maxVal, FILE *fp, int *matrix) {
     fprintf(fp, "%s\n", "P2");
-    fprintf(fp, "%d\n", cols);
+    fprintf(fp, "%d ", cols);
     fprintf(fp, "%d\n", rows);
     fprintf(fp, "%d\n", maxVal);
     int j = 0;
