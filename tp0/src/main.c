@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <memory.h>
 #include <math.h>
-#include <asm/errno.h>
 
 void printError(char *message);
 
