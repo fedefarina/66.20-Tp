@@ -19,9 +19,10 @@ void createPGM(int cols, int rows, int maxVal, FILE *fp, int matrix[rows][cols])
     fprintf(fp, "%d ", cols);
     fprintf(fp, "%d\n", rows);
     fprintf(fp, "%d\n", maxVal);
-
-    for (int j = 0; j < cols; j++) {
-        for (int i = 0; i < rows; i++) {
+    int j = 0;
+    for (; j < cols; j++) {
+        int i = 0;
+        for (; i < rows; i++) {
             fprintf(fp, "%d", matrix[i][j]);
             //Avoid add an space after last column
             if (i != rows - 1) {
@@ -62,7 +63,7 @@ int** doCalculo(float xCenter, float yCenter, int height, int width, int resWidt
     while(x < xCenter + width / 2) {
         xArray[i] = x + coeficientWidth / 2;
         x += coeficientWidth;
-        printf("coeficient> \f\n", coeficientWidth);
+        printf("coeficient> %f\n", coeficientWidth);
     }
     printf("a\n");
     i = 0;
@@ -73,13 +74,14 @@ int** doCalculo(float xCenter, float yCenter, int height, int width, int resWidt
     printf("b\n");
 
     int output[resWidth][resHeight];
-
-    for (i = 0; i< resWidth; i++) {
-        for (int j = 0; j< resHeight; j++) {
+    i = 0;
+    for (; i< resWidth; i++) {
+        int j = 0;
+        for (; j< resHeight; j++) {
             float zReal = xArray[i];
             float zIm = yArray[j];
             int k = 0;
-            for (k; j < iterations; k++) {
+            for (; j < iterations; k++) {
                 if (module(zReal, zIm) > 2) {
                     break;
                 }
@@ -165,7 +167,8 @@ int main(int argc, char **argv) {
     /* resolution values */
     if (resolutionValue != NULL) {
         size_t length = strlen(resolutionValue);
-        for (int i = 0; i < length; i++) {
+        int i = 0;
+        for (; i < length; i++) {
             if (isdigit(resolutionValue[i])) {
                 continue;
             } else if (resolutionValue[i] == 'x' && offsetResolution == 0) {
@@ -301,7 +304,8 @@ int checkImaginaryNumber(char *argumentValue) {
     int point = 0;
     int amountOfSigns = 0;
     int offset = 0;
-    for (int i = length - 1; i >= 0; i--) {
+    int i = length - 1;
+    for (; i >= 0; i--) {
         if (isdigit(argumentValue[i])) {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
@@ -327,7 +331,9 @@ int checkImaginaryNumber(char *argumentValue) {
 /* funcion que devuelve -1 si el parametro tiene un error y 0 si es un argumento correcto */
 int checkNumber(char *argumentValue) {
     int point = 0;
-    for (unsigned int i = 0; i < strlen(argumentValue); i++) {
+    size_t length = strlen(argumentValue);
+    unsigned int i = 0;
+    for (; i < length; i++) {
         if (isdigit(argumentValue[i])) {
             continue;
         } else if (argumentValue[i] == '.' && point == 0) {
