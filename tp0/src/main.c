@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <memory.h>
 #include <math.h>
-#include <asm/errno.h>
 
 void printError(char *message);
 
@@ -80,10 +79,9 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, float re
     int *output = (int *) malloc(((int) resWidth) * ((int) resHeight) * sizeof(int));
 
     if (!output) {
-        perror("malloc failed");
+        perror("fatal: Malloc failed");
         exit(EXIT_FAILURE);
     }
-
 
     //Initialize with zeros
     int r = 0;
