@@ -4,7 +4,7 @@ project(tp0)
 set(ROOT_PATH "${${PROJECT_NAME}_SOURCE_DIR}")
 set(TEST_PATH "${ROOT_PATH}/test/")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -g")
 
 set(SOURCE_FILES src/main.c)
 add_executable(tp0 ${SOURCE_FILES})
