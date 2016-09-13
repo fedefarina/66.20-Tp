@@ -6,7 +6,7 @@ FAILED_TESTS_COUNT=0
 #1. Generamos una imagen de 1 punto de lado, centrada en el orı́gen del plano complejo
 
 OUTPUT="$(../build/tp0 -c 0.01+0i -r 1x1 -o -)"
-TEST1_OUTPUT=$'P2\n1\n1\n255\n255'
+TEST1_OUTPUT=$'P2\n1\n1\n255\n19'
 
 if [ "$OUTPUT" == "$TEST1_OUTPUT" ]
 then

@@ -258,7 +258,7 @@ int main(int argc, char **argv) {
     if (centerValue != NULL) {
         int offset = checkImaginaryNumber(centerValue);
         if (offset == -1) {
-            printError("fatal: invalid c value argument.");
+            printError("fatal: invalid center specification.");
             exit(EXIT_FAILURE);
         }
         char centerAuxReal[offset];
