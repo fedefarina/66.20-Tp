@@ -54,8 +54,8 @@ int *matrix_row(int *output, int row, int width) {
 int *doCalculo(float xCenter, float yCenter, float height, float width, int resWidth, int resHeight, float cX,
                float cY, int iterations) {
 
-    float xArray[resWidth];
-    float yArray[resHeight];
+    float *xArray = malloc(resWidth * sizeof(float));
+    float *yArray = malloc((resHeight+1) * sizeof(float));
 
     float coeficientWidth = width / resWidth;
     float coeficientHeight = height / resHeight;
@@ -113,6 +113,9 @@ int *doCalculo(float xCenter, float yCenter, float height, float width, int resW
             row[i] = k;
         }
     }
+
+    free(xArray);
+    free(yArray);
     return output;
 }
 
