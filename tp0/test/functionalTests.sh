@@ -31,7 +31,7 @@ fi
 
 #3. Imagen imposible
 OUTPUT="$(../build/tp0 -c 0+0i -r 0x1 -o - 2>&1)"
-TEST3_OUTPUT=$'fatal: invalid resolution specification.'
+TEST3_OUTPUT=$'Usage:\n tp0 -r: resolution nxm being n width and m height. They both have to be integers higher than 0.\n tp0 -c: specifies the center of the image in a binomial form. Example: a+bi\n tp0 -C: specifies the parameter c in a binomial form like the center.\n tp0 -w: specifies the width of the rectangle that contains the region we are about to draw.\n tp0 -H: specifies the height of the rectangle that contains the region we are about to draw.\n tp0 -o: you can specifie the output pgm file as an argument, or put - to get the result as a standard output.\n tp0 -r 1280x728 -c 1.0015-1.254i -C -1.125-0.21650635094611i -w 4.5 -H 3.3 -0 dos.pgm: as an example combining every parameter.'
 
 if [ "$OUTPUT" == "$TEST3_OUTPUT" ]
 then
