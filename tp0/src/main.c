@@ -67,28 +67,56 @@ unsigned int checkNumber(unsigned char *argumentValue) {
     return 1;
 }
 
+
+void closeFileAndExit(FILE *fp) {
+    printError("fatal: Error writing to file");
+    fclose(fp);
+    exit(EXIT_FAILURE);
+}
+
+void checkWrite(FILE *fp) {
+    if (ferror(fp)) {
+        closeFileAndExit(fp);
+    }
+}
+
+
 void createPGM(int cols, int rows, int maxVal, FILE *fp, int *matrix) {
+
     fprintf(fp, "%s\n", "P2");
+    checkWrite(fp);
+
     fprintf(fp, "%d ", cols);
+    checkWrite(fp);
+
     fprintf(fp, "%d\n", rows);
+    checkWrite(fp);
+
     fprintf(fp, "%d\n", maxVal);
+    checkWrite(fp);
+
     int j = 0;
     for (; j < rows; j++) {
         int i = 0;
         int *row = matrix_row(matrix, j, cols);
         for (; i < cols; i++) {
-            //fprintf(fp, "%d", matrix[j * cols + i]);
             fprintf(fp, "%d", row[i]);
+            checkWrite(fp);
+
             //Avoid add an space after last column
             if (i != cols - 1) {
                 fputs(" ", fp);
+                checkWrite(fp);
             }
         }
+
         fputs("\n", fp);
+        checkWrite(fp);
     }
 
     fclose(fp);
 }
+
 
 double module(double x, double y) {
     return sqrt(x * x + y * y);
