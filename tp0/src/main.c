@@ -7,6 +7,11 @@
 
 void printError(char *message);
 
+int *matrix_row(int *output, int row, int width) {
+    return output + row * width;
+}
+
+
 /* funcion que devuelve -1 si el parametro tiene un error y el offset donde se divide el numero complejo entre real
  *                  e imaginario en caso de estar bien              */
 int checkImaginaryNumber(unsigned char *argumentValue) {
@@ -42,7 +47,6 @@ int checkImaginaryNumber(unsigned char *argumentValue) {
     return offset;
 }
 
-
 /* funcion que devuelve 0 si el parametro tiene un error y 1 si es un argumento correcto */
 unsigned int checkNumber(unsigned char *argumentValue) {
     int point = 0;
@@ -69,12 +73,14 @@ void createPGM(int cols, int rows, int maxVal, FILE *fp, int *matrix) {
     fprintf(fp, "%d\n", rows);
     fprintf(fp, "%d\n", maxVal);
     int j = 0;
-    for (; j < cols; j++) {
+    for (; j < rows; j++) {
         int i = 0;
-        for (; i < rows; i++) {
-            fprintf(fp, "%d", matrix[j * rows + i]);
+        int *row = matrix_row(matrix, j, cols);
+        for (; i < cols; i++) {
+            //fprintf(fp, "%d", matrix[j * cols + i]);
+            fprintf(fp, "%d", row[i]);
             //Avoid add an space after last column
-            if (i != rows - 1) {
+            if (i != cols - 1) {
                 fputs(" ", fp);
             }
         }
@@ -94,10 +100,6 @@ double calculateX(double x, double y, double c) {
 
 double calculateY(double x, double y, double c) {
     return 2 * x * y + c;
-}
-
-int *matrix_row(int *output, int row, int width) {
-    return output + row * width;
 }
 
 int *doCalculo(double xCenter, double yCenter, double height, double width, int resWidth, int resHeight, double cX,
@@ -357,7 +359,7 @@ int main(int argc, char **argv) {
      printf("c im= %f \n", cIm);
      printf("output= %s \n", output);
  */
-
+    //doCalculo(xCenter,  yCenter,  height,  width,  resWidth,  resHeight,  cX,cY,  iterations)
     int *matrix = doCalculo(centerRe, centerIm, rectangleHeight, rectangleWidth, resolutionWidth, resolutionHeight, cRe,
                             cIm,
                             256);
