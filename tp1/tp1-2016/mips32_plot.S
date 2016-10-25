@@ -4,11 +4,13 @@
                 .globl mips32_plot
 mips32_plot:   
                 subu    sp,sp,108 # Resto 108 al stack pointer
-                sw      ra,104(sp)# ra(return adress) 
-                sw      $fp,100(sp)
-                move    $fp,sp		
-                sw      a0,108($fp) // a0,a1,a2,a3 argumentos que se le pasan a la función
-                sw      s5,96($fp)  // Inicio guardo lo que ya tenian los registros
+                sw      ra,104(sp)# ra(return adress) 104(sp)=ra 
+                sw      $fp,100(sp) # 100(sp)=fp
+                move    $fp,sp		# Copia sp a fp -> fp=sp
+                sw      a0,108($fp) # a0,a1,a2,a3 argumentos que se le pasan a la función
+
+				# Inicio guardo lo que ya tenian los registros
+                sw      s5,96($fp)  
                 sw      s4,92($fp)	
                 sw      s3,88($fp)
                 sw      s2,84($fp)
@@ -18,7 +20,10 @@ mips32_plot:
                 s.s     $f27,68($fp)
                 s.s     $f22,64($fp)
                 s.s     $f21,60($fp)
-                s.s     $f20,56($fp) // Fin guardo lo que ya tenian los registros
+                s.s     $f20,56($fp) 
+				# Fin guardo lo que ya tenian los registros
+
+				# Inicio cargo la estructura en registros
                 l.s     $f20,0(a0)              #$f20 = ulr
                 l.s     $f27,4(a0)              #$f27 = uli
                 l.s     $f21,16(a0)             #$f21 = dr
@@ -27,17 +32,25 @@ mips32_plot:
                 lw      s3,24(a0)               #s3 = res_x
                 lw      s4,28(a0)               #s4 = res_y
                 lw      s5,36(a0)
-                jal     print_header
-                move    s0,zero                 #s0  Y = 0
+				# Fin cargo la estructura en registros
+
+                jal     print_header            # Luego vuelve, setea en cero y ejecuta loop_y
+                move    s0,zero                 # s0  Y = 0
         
+
+
 loop_y:   
-                mov.s   $f28,$f20ci = parms->UL_im
-                move    s1,zero #s1: X = 0
+                mov.s   $f28,$f20  #ci = parms->UL_im
+                move    s1,zero    #s1: X = 0
                 j       loop_x
+
 ret_y:          addiu   s0,s0,1
                 sub.s   $f27,$f27,$f22
                 bltu    s0, s4, loop_y
-salir:          lw      ra,104($fp) //Inicio restauro los registros iniciales
+
+salir:          
+				#Inicio restauro los registros iniciales
+				lw      ra,104($fp) 
                 lw      s5,96($fp)
                 lw      s4,92($fp)
                 lw      s3,88($fp)
@@ -48,7 +61,9 @@ salir:          lw      ra,104($fp) //Inicio restauro los registros iniciales
                 l.s     $f27,68($fp)
                 l.s     $f22,64($fp)
                 l.s     $f21,60($fp)
-                l.s     $f20,56($fp) //Fin restauro los registros iniciales
+                l.s     $f20,56($fp) 
+				#Fin restauro los registros iniciales
+
                 addiu   sp,sp,108
                 lw      $fp,100($fp)
                 jr      ra
@@ -93,7 +108,7 @@ print_shade:    move    t1,t3
                 jal     print_integer
                 li      v0,4
                 la      a0,1
-                la      a1,endlineci = parms->UL_im
+                la      a1,endline  # ci = parms->UL_im
                 la      a2,1
                 syscall
                 j       ret_x
@@ -115,7 +130,7 @@ print_header:
                 syscall
                 move    t1,s4
                 jal     print_integer
-                lw      ra,8($fp)ci = parms->UL_im
+                lw      ra,8($fp) #ci = parms->UL_im
                 li      v0,4
                 li      a0,1
                 la      a1,endline
@@ -169,15 +184,15 @@ endline:        .asciiz   "\n"
 header:         .asciiz "P2\n"
 
                 .align 2
-puntero:        .float  -0.65                   #ulr    0 //Extremo superior izquierzo (re)
+puntero:        .float  -0.65                   #ulr    0 Extremo superior izquierzo (re)
                 .float  0.3                     #uli    4 
-                .float  2.0                     #lrr    8 // Extremo inferior derecho (re)
+                .float  2.0                     #lrr    8  Extremo inferior derecho (re)
                 .float  -3.0                    #lri    12
-                .float  0.0015625               #dr     16 // Real center
+                .float  0.0015625               #dr     16 Real center
                 .float  0.002083333333333       #di     20 
-                .word   64                      #res_x  24 //Resolución en X 
+                .word   64                      #res_x  24 Resolución en X 
                 .word   48                      #res_y  28
-                .word   255                     #shade  32 // Brillo
+                .word   255                     #shade  32 Brillo
 
 numeros:    .word num_0, num_1, num_2, num_3, num_4, num_5, num_6, num_7, num_8, num_9
 num_0:  .asciiz "0"
