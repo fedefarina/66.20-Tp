@@ -65,6 +65,34 @@ l.s $f28, 4(t0)			# parms->UL_im
 l.s $f14, 16(t0)		# parms->d_re
 l.s $f30, 20(t0)		# parms->d_im
 
+#arranca la magia by RE, danger
+li t0, 0                #y=0
+move $f46, $f28         #ayux de ul_im
+
+loop_y:
+    li      t1, 0       #x=0
+    move $f38, $f12     #auxiliar de ul_re
+
+    j       loop_x
+    addiu   t0,1        #y++
+    sub.s   $f46, $f46, $f30 #ci -= parms->d_im
+
+loop_x:
+    mov.s   $f0, $f38   #zr = cr;
+    mov.s   $f1, $f46   #zi = ci;
+    j       bright_loop
+    addiu   t1, 1   #x++
+    add.s   $f38, $f14
+
+bright_loop_init
+    li      t3, 0 #c = 0
+bright_loop
+    #aqui iran las cuentas
+    addiu   t3,1    #c++
+
+
+# end of danger
+
  jal     print_header  
 
 salir:
