@@ -8,6 +8,20 @@
 	.align 1                
 	endline:        .asciiz   "\n"
 	header:         .asciiz "P2\n"
+
+
+numeros:    .word num_0, num_1, num_2, num_3, num_4, num_5, num_6, num_7, num_8, num_9
+num_0:  .asciiz "0"
+num_1:  .asciiz "1"
+num_2:  .asciiz "2"
+num_3:  .asciiz "3"
+num_4:  .asciiz "4"
+num_5:  .asciiz "5"
+num_6:  .asciiz "6"
+num_7:  .asciiz "7"
+num_8:  .asciiz "8"
+num_9:  .asciiz "9"
+
 .text
 .abicalls
 .align 2
@@ -20,11 +34,11 @@ mips32_plot:
 .cpload t9
 .set reorder
 
-subu    sp,sp,112 # Resto 112 al stack pointer
+subu    sp,sp,112 
 .cprestore 16
 
-sw      ra,24(sp)# ra(return adress) 24(sp)=ra
-sw      $fp,20(sp) # 20(sp)=fp
+sw      ra,24(sp)
+sw      $fp,20(sp) 
 sw 		gp, 16(sp)
 
 move    $fp,sp
@@ -44,12 +58,12 @@ lw t6, 36(t0)			# parms->y_res
 lw t4, 40(t0)			# parms->shades
 lw t7, 44(t0)			# parms->fd
 
-l.s $f10, 24(t0)			# cpr = parms->cp_re
-l.s $f26, 28(t0)			# cpi = parms->cp_im
+l.s $f10, 24(t0)		# cpr = parms->cp_re
+l.s $f26, 28(t0)		# cpi = parms->cp_im
 l.s $f12, 0(t0)			# parms->UL_re
 l.s $f28, 4(t0)			# parms->UL_im
-l.s $f14, 16(t0)			# parms->d_re
-l.s $f30, 20(t0)			# parms->d_im
+l.s $f14, 16(t0)		# parms->d_re
+l.s $f30, 20(t0)		# parms->d_im
 
  jal     print_header  
 
@@ -71,18 +85,53 @@ salir:
 	j     ra
 
 print_header:  
-    sw      ra,8($fp)
-    li      v0,4  # print_str system call code
-    li      a0,1
+	sw      ra,8($fp)
+    li      v0,SYS_write
     la      a1,header
     li      a2,3
+    move	a0,t7
     syscall
 
-    lw      ra,8($fp)
-    li      v0,4
-    li      a0,1
+    li 		s2,123
+	move    t1,s2
+    jal     print_integer       
+	lw      ra,8($fp)
+
+    li      v0,SYS_write
     la      a1,endline
     li      a2,1
+    move	a0,t7
     syscall
-    jr      ra           
+    jr      ra        
+
+print_integer:  li      t4,52
+                addu    t4,t4,$fp
+                move    t5,zero
+                li      t3,10
+ascii_loop:     divu    t1,t3 
+                mfhi    t2
+                mflo    t1
+                sll     t2,t2,2
+                sw      t2,0(t4)
+                addiu   t5,t5,1
+                li      t6,4
+                subu    t4,t4,t6
+                bnez    t1,ascii_loop
+                move    t6,t5
+ascii_loop_2:   addiu   t4,t4,4
+                li      t8,1
+                subu    t6,t6,t8
+                li      v0,4
+                move	a0,t7
+                sw      t6,4($fp)
+                sw      t4,12($fp)
+                lw      t1,0(t4)
+                lw      a1,numeros(t1)
+                li      a2,1
+                syscall
+                lw      t6,4($fp)
+                lw      t4,12($fp)
+                bnez    t6,ascii_loop_2
+                jr      ra
+
 .end mips32_plot
