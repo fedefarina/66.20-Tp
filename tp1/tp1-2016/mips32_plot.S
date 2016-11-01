@@ -9,6 +9,9 @@
 	endline:        .asciiz   "\n"
 	header:         .asciiz "P2\n"
 	space:         .asciiz " "
+	.align 2
+	mod_cuad:       .float  4.0
+	const_mult:     .float  3.0
 
 
 numeros:    .word num_0, num_1, num_2, num_3, num_4, num_5, num_6, num_7, num_8, num_9
@@ -67,6 +70,8 @@ l.s $f14, 16(t0)		# parms->d_re
 l.s $f30, 20(t0)		# parms->d_im
 
 jal     print_header  
+move    t0,zero 
+jal loop_y
 
 salir:
 
@@ -95,35 +100,51 @@ print_header:
     li      a2,3
     move	a0,t7
     syscall
-    jal restore_temp		# Cargo los reg temporales
+    jal restore_temp	# Cargo los reg temporales
 
     #Ancho
-	jal save_temp		# Guardo los reg temporales
+	jal save_temp		
 	move    t1,t5
     jal     print_integer       
-    jal restore_temp		# Cargo los reg temporales
+    jal restore_temp	
 
-	jal save_temp		# Guardo los reg temporales
 	#Espacio
-    li      v0,SYS_write
+	jal save_temp		
+	li      v0,SYS_write
     la      a1,space
     li      a2,1
     move	a0,t7
     syscall
-    jal restore_temp		# Cargo los reg temporales
+    jal restore_temp	
 
     #Alto
-    jal save_temp		# Guardo los reg temporales
+    jal save_temp		
 	move    t1,t6
     jal     print_integer       
-    jal restore_temp		# Cargo los reg temporales
+    jal restore_temp	
 	
 
+	jal save_temp		
     li      v0,SYS_write
     la      a1,endline
     li      a2,1
     move	a0,t7
     syscall
+    jal restore_temp	
+
+	#Shade max value
+    jal save_temp		
+	move    t1,t4
+    jal     print_integer       
+    jal restore_temp	
+
+    jal save_temp		
+    li      v0,SYS_write
+    la      a1,endline
+    li      a2,1
+    move	a0,t7
+    syscall
+    jal restore_temp	
 
     lw      ra,8($fp)
     jr      ra        
@@ -181,5 +202,67 @@ restore_temp:
 	lw t6,80($fp)
 	lw t7,76($fp)
 	j ra
+
+
+loop_y:   
+                mov.s   $f21,$f12
+                move    t1,zero
+                j       loop_x
+ret_y:          addiu   t0,t0,1
+                sub.s   $f28,$f28,$f30
+                li      v0,4
+                move	a0,t7
+                la      a1,endline
+                la      a2,1
+                syscall
+                bltu    t0, t6, loop_y
+                j salir
+
+loop_x:         j      shade
+ret_x:          addiu   s1,s1,1
+                add.s   $f21,$f21,$f14
+                bltu    s1,s3,loop_x
+                j       ret_y
+        
+
+shade:          mov.s   $f4,$f28        #CI
+                mov.s   $f5,$f21        #CR
+                move    t3,zero
+                
+loop_shade:     l.s     $f6,mod_cuad
+                mul.s   $f7,$f4,$f4
+                mul.s   $f8,$f5,$f5                     
+                add.s   $f7,$f8,$f7
+
+                c.le.s  $f6,$f7
+                bc1t    print_shade
+                mul.s   $f7,$f5,$f5   
+                l.s     $f6,const_mult
+                mul.s   $f8,$f6,$f4
+                mul.s   $f8,$f8,$f4
+                mul.s   $f8,$f8,$f5
+                sub.s   $f7,$f7,$f8     
+                add.s   $f7,$f7,$f21
+                mul.s   $f8,$f4,$f4
+                mul.s   $f8,$f8,$f4
+                mul.s   $f9,$f6,$f5
+                mul.s   $f9,$f9,$f5
+                mul.s   $f9,$f9,$f4
+                sub.s   $f8,$f9,$f8
+                add.s   $f8,$f8,$f28
+                mov.s   $f4,$f8
+                mov.s   $f5,$f7                 
+                addiu   t3,t3,1 
+                bltu    t3,t4,loop_shade
+print_shade:    move    t1,t3
+                jal     print_integer
+                li      v0,4
+                move	a0,t7
+                la      a1,space
+                la      a2,1
+                syscall
+                j       ret_x
+
+
 
 .end mips32_plot
