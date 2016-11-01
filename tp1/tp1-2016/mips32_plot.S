@@ -8,6 +8,7 @@
 	.align 1                
 	endline:        .asciiz   "\n"
 	header:         .asciiz "P2\n"
+	space:         .asciiz " "
 
 
 numeros:    .word num_0, num_1, num_2, num_3, num_4, num_5, num_6, num_7, num_8, num_9
@@ -65,35 +66,7 @@ l.s $f28, 4(t0)			# parms->UL_im
 l.s $f14, 16(t0)		# parms->d_re
 l.s $f30, 20(t0)		# parms->d_im
 
-#arranca la magia by RE, danger
-li t0, 0                #y=0
-move $f46, $f28         #ayux de ul_im
-
-loop_y:
-    li      t1, 0       #x=0
-    move $f38, $f12     #auxiliar de ul_re
-
-    j       loop_x
-    addiu   t0,1        #y++
-    sub.s   $f46, $f46, $f30 #ci -= parms->d_im
-
-loop_x:
-    mov.s   $f0, $f38   #zr = cr;
-    mov.s   $f1, $f46   #zi = ci;
-    j       bright_loop
-    addiu   t1, 1   #x++
-    add.s   $f38, $f14
-
-bright_loop_init
-    li      t3, 0 #c = 0
-bright_loop
-    #aqui iran las cuentas
-    addiu   t3,1    #c++
-
-
-# end of danger
-
- jal     print_header  
+jal     print_header  
 
 salir:
 
@@ -113,30 +86,53 @@ salir:
 	j     ra
 
 print_header:  
-	sw      ra,8($fp)
-    li      v0,SYS_write
+
+  	sw      ra,8($fp)	
+	jal save_temp		# Guardo los reg temporales
+    #Header magic code
+	li      v0,SYS_write
     la      a1,header
     li      a2,3
     move	a0,t7
     syscall
+    jal restore_temp		# Cargo los reg temporales
 
-    li 		s2,123
-	move    t1,s2
+    #Ancho
+	jal save_temp		# Guardo los reg temporales
+	move    t1,t5
     jal     print_integer       
-	lw      ra,8($fp)
+    jal restore_temp		# Cargo los reg temporales
+
+	jal save_temp		# Guardo los reg temporales
+	#Espacio
+    li      v0,SYS_write
+    la      a1,space
+    li      a2,1
+    move	a0,t7
+    syscall
+    jal restore_temp		# Cargo los reg temporales
+
+    #Alto
+    jal save_temp		# Guardo los reg temporales
+	move    t1,t6
+    jal     print_integer       
+    jal restore_temp		# Cargo los reg temporales
+	
 
     li      v0,SYS_write
     la      a1,endline
     li      a2,1
     move	a0,t7
     syscall
+
+    lw      ra,8($fp)
     jr      ra        
 
-print_integer:  li      t4,52
-                addu    t4,t4,$fp
+print_integer:  li      t4,0
+                addu    t4,t4,$fp # t4=52+fp
                 move    t5,zero
                 li      t3,10
-ascii_loop:     divu    t1,t3 
+ascii_loop:     divu    t1,t3 # integer/10
                 mfhi    t2
                 mflo    t1
                 sll     t2,t2,2
@@ -146,7 +142,9 @@ ascii_loop:     divu    t1,t3
                 subu    t4,t4,t6
                 bnez    t1,ascii_loop
                 move    t6,t5
-ascii_loop_2:   addiu   t4,t4,4
+ascii_loop_2:   addiu   t4,t4,4    
+				sw      t6,4($fp)
+                sw      t4,12($fp)
                 li      t8,1
                 subu    t6,t6,t8
                 li      v0,4
@@ -159,7 +157,29 @@ ascii_loop_2:   addiu   t4,t4,4
                 syscall
                 lw      t6,4($fp)
                 lw      t4,12($fp)
-                bnez    t6,ascii_loop_2
-                jr      ra
+	            bnez    t6,ascii_loop_2
+	            jr      ra
+
+save_temp:
+	sw t0,104($fp)
+	sw t1,100($fp)
+	sw t2,96($fp)
+	sw t3,92($fp)
+	sw t4,88($fp)
+	sw t5,84($fp)
+	sw t6,80($fp)
+	sw t7,76($fp)
+	j ra
+
+restore_temp:	
+	lw t0,104($fp)
+	lw t1,100($fp)
+	lw t2,96($fp)
+	lw t3,92($fp)
+	lw t4,88($fp)
+	lw t5,84($fp)
+	lw t6,80($fp)
+	lw t7,76($fp)
+	j ra
 
 .end mips32_plot
